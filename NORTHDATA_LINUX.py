@@ -275,8 +275,7 @@ def get_next_company_to_scrape(table_name):
 def scraping_source(companyinfo):
 
     element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]')))
-    if companyinfo['url'] == "" or companyinfo['url'] == None or '?id=' in companyinfo[
-        'url'] or 'http://static.northdata.de':
+    if companyinfo['url'] == "" or companyinfo['url'] == None or '?id=' in companyinfo['url'] or 'static.northdata.de' in companyinfo['url']:
         driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').clear()
         time.sleep(0.5)
         driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(companyinfo['name'])
@@ -823,7 +822,7 @@ def scraping_source(companyinfo):
                 update_query = (
                     f"UPDATE {data_table_updated} "
                     "SET end_time = CURRENT_TIMESTAMP ,company_name = %(company_name)s,register = %(REGISTER)s,address=%(ADRESSE)s,gegenstand = %(GEGENSTAND)s ,telephone = %(Telephone)s, fax = %(Fax)s, email = %(E-Mail)s, website = %(Website)s, ust_id = %(UST-ID)s, graph = %(graph)s, konzernjahresabschluss = %(KONZERNJAHRESABSCHLUSS)s, publications = %(publications)s, finanzen = %(Finanzen)s, mktg_tech = %(Mktg & Tech)s,balance = %(balance)s, income = %(income)s, wz_branchencode = %(wz-branchencode)s, wz_name = %(wz-name)s, liste_der_geselleschafter = %(liste_der_geselleschafter)s,markenbekanntmachungen = %(Markenbekanntmachungen)s,jahressabschluss = %(jahressabschluss)s ,HTML=%(HTML)s "
-                    "WHERE name = %(NAME)s"
+                    f"WHERE name = {companyinfo['name']}"
                 )
                 cursor.execute(update_query, item)
                 db.commit()
