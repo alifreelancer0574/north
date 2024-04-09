@@ -275,25 +275,30 @@ def get_next_company_to_scrape(table_name):
 def scraping_source(companyinfo):
 
     element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]')))
-    driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').clear()
-    time.sleep(0.5)
-    driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(companyinfo['name'])
-
-    time.sleep(0.5)
-    try:
-        driver.find_element(By.CSS_SELECTOR, "div.results.transition.visible a").click()
+    if companyinfo['url'] == "" or companyinfo['url'] == None or '?id=' in companyinfo[
+        'url'] or 'http://static.northdata.de':
+        driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').clear()
         time.sleep(0.5)
-    except:
-        pass
-    try:
-        driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(Keys.ENTER)
-    except:
-        pass
+        driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(companyinfo['name'])
+        # driver.find_element(By.CSS_SELECTOR,'input[placeholder="Firma oder Person"]' ).send_keys('Robert Bosch GmbH, Gerlingen')
+        # driver.find_element(By.CSS_SELECTOR,'input[placeholder="Firma oder Person"]' ).send_keys('incari GmbH, Berlin')
+        time.sleep(0.5)
+        try:
+            driver.find_element(By.CSS_SELECTOR, "div.results.transition.visible a").click()
+            time.sleep(0.5)
+        except:
+            pass
+        try:
+            driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(Keys.ENTER)
+        except:
+            pass
+    else:
+        driver.get(companyinfo['url'])
 
 
 
 
-    time.sleep(2)
+    time.sleep(5)
 
     try:
         driver.find_element(By.CSS_SELECTOR, "span#cmpwelcomebtnyes a").click()
@@ -303,6 +308,7 @@ def scraping_source(companyinfo):
         pass
     try:
         driver.find_elements(By.CSS_SELECTOR, "div.content div.summary a")[0].click()
+        time.sleep(0.5)
     except:
         pass
 
@@ -310,6 +316,7 @@ def scraping_source(companyinfo):
         for check_pont_loop in driver.find_elements(By.CSS_SELECTOR, "div.content div.summary a"):
             if urls_inputs['name'].lower().replace(".", "") in check_pont_loop.text.replace(".", "").lower():
                 check_pont_loop.click()
+                time.sleep(0.5)
                 break
     except:
         pass
@@ -319,45 +326,31 @@ def scraping_source(companyinfo):
     item['company_id'] = companyinfo['id']
     item['url'] = driver.current_url
     try:
-        for index, loop in enumerate(
-                driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[
-                    0].find_elements(By.XPATH, "./*")):
+        for index, loop in enumerate(driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH, "./*")):
             # for inner_index , inner_loop in enumerate(loop.find_elements(By.CSS_SELECTOR,"h3")):
             if loop.text.strip() == 'NAME':
                 try:
-                    item['NAME'] = \
-                        driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[
-                            0].find_elements(By.XPATH, "./*")[index + 1].find_element(By.CSS_SELECTOR,
-                                                                                      "div.item").text
+                    item['NAME'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH, "./*")[index + 1].find_element(By.CSS_SELECTOR,"div.item").text
                 except:
                     item['NAME'] = ""
             if loop.text.strip() == 'REGISTER':
                 try:
                     # item['REGISTER'] =  driver.find_elements(By.CSS_SELECTOR,"div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH,"./*")[index+1].find_element(By.CSS_SELECTOR,"div.item").text.replace('Ut',"").strip()
-                    item['REGISTER'] = \
-                        driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[
-                            0].find_elements(By.XPATH, "./*")[index + 1].text
+                    item['REGISTER'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH, "./*")[index + 1].text
                 except:
                     item['REGISTER'] = ""
             if loop.text.strip() == 'ADRESSE':
                 try:
-                    item['ADRESSE'] = \
-                        driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[
-                            0].find_elements(By.XPATH, "./*")[index + 1].find_element(By.CSS_SELECTOR,
-                                                                                      "div.item").text
+                    item['ADRESSE'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH, "./*")[index + 1].find_element(By.CSS_SELECTOR,"div.item").text
                 except:
                     item['ADRESSE'] = ""
             if loop.text.strip() == 'GEGENSTAND':
                 try:
-                    item['GEGENSTAND'] = \
-                        driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[
-                            0].find_elements(By.XPATH, "./*")[index + 1].text
+                    item['GEGENSTAND'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH, "./*")[index + 1].text
                 except:
                     item['GEGENSTAND'] = ""
             if loop.text.strip() == 'WEITERE INFORMATIONEN':
-                all_info_social = \
-                    driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[
-                        0].find_elements(By.XPATH, "./*")[index + 1].text
+                all_info_social = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH, "./*")[index + 1].text
                 for table_loop in all_info_social.split('\n'):
                     if 'Tel.' in table_loop:
                         item['Telephone'] = table_loop.split('Tel.')[-1].strip()
@@ -372,49 +365,31 @@ def scraping_source(companyinfo):
     except:
         try:
 
-            for index, loop in enumerate(
-                    driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,
-                                                                                              "div.column").find_elements(
-                        By.XPATH, './*')):
+            for index, loop in enumerate(driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,"div.column").find_elements(By.XPATH, './*')):
                 # for inner_index , inner_loop in enumerate(loop.find_elements(By.CSS_SELECTOR,"h3")):
                 if loop.text.strip() == 'NAME':
                     try:
-                        item['NAME'] = \
-                            driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,
-                                                                                                      "div.column").find_elements(
-                                By.XPATH, './*')[index + 1].find_element(By.CSS_SELECTOR, "div.item").text
+                        item['NAME'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,"div.column").find_elements(By.XPATH, './*')[index + 1].find_element(By.CSS_SELECTOR, "div.item").text
                     except:
                         item['NAME'] = ""
                 if loop.text.strip() == 'REGISTER':
                     try:
                         # item['REGISTER'] =  driver.find_elements(By.CSS_SELECTOR,"div.ui.stackable.two.column.grid div.column")[0].find_elements(By.XPATH,"./*")[index+1].find_element(By.CSS_SELECTOR,"div.item").text.replace('Ut',"").strip()
-                        item['REGISTER'] = \
-                            driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,
-                                                                                                      "div.column").find_elements(
-                                By.XPATH, './*')[index + 1].text
+                        item['REGISTER'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,"div.column").find_elements(By.XPATH, './*')[index + 1].text
                     except:
                         item['REGISTER'] = ""
                 if loop.text.strip() == 'ADRESSE':
                     try:
-                        item['ADRESSE'] = \
-                            driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,
-                                                                                                      "div.column").find_elements(
-                                By.XPATH, './*')[index + 1].find_element(By.CSS_SELECTOR, "div.item").text
+                        item['ADRESSE'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,"div.column").find_elements(By.XPATH, './*')[index + 1].find_element(By.CSS_SELECTOR, "div.item").text
                     except:
                         item['ADRESSE'] = ""
                 if loop.text.strip() == 'GEGENSTAND':
                     try:
-                        item['GEGENSTAND'] = \
-                            driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,
-                                                                                                      "div.column").find_elements(
-                                By.XPATH, './*')[index + 1].text
+                        item['GEGENSTAND'] = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,"div.column").find_elements(By.XPATH, './*')[index + 1].text
                     except:
                         item['GEGENSTAND'] = ""
                 if loop.text.strip() == 'WEITERE INFORMATIONEN':
-                    all_info_social = \
-                        driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,
-                                                                                                  "div.column").find_elements(
-                            By.XPATH, './*')[index + 1].text
+                    all_info_social = driver.find_elements(By.CSS_SELECTOR, "div.ui.stackable")[0].find_element(By.CSS_SELECTOR,"div.column").find_elements(By.XPATH, './*')[index + 1].text
                     for table_loop in all_info_social.split('\n'):
                         if 'Tel.' in table_loop:
                             item['Telephone'] = table_loop.split('Tel.')[-1].strip()
@@ -433,9 +408,7 @@ def scraping_source(companyinfo):
 
     try:
 
-        for charts_data in json.loads(
-                driver.find_element(By.CSS_SELECTOR, "div.tab-content.has-bar-charts").get_attribute('data-data'))[
-                               'item'][:3]:
+        for charts_data in json.loads(driver.find_element(By.CSS_SELECTOR, "div.tab-content.has-bar-charts").get_attribute('data-data'))['item'][:3]:
             item2 = dict()
             try:
                 item2['title'] = charts_data['title']
@@ -495,8 +468,7 @@ def scraping_source(companyinfo):
     for publica in driver.find_elements(By.CSS_SELECTOR, "div.ui.feed div.event"):
         item_pub = dict()
         try:
-            item_pub['icon_id'] = \
-                publica.find_element(By.CSS_SELECTOR, "div.label a").get_attribute('href').split('id=')[-1]
+            item_pub['icon_id'] = publica.find_element(By.CSS_SELECTOR, "div.label a").get_attribute('href').split('id=')[-1]
         except:
             item_pub['icon_id'] = ''
         try:
@@ -519,7 +491,7 @@ def scraping_source(companyinfo):
                 try:
                     count_while = count_while + 1
                     tables_csv.find_element(By.CSS_SELECTOR, 'a[title="CSV/Excel Download"]').click()
-                    time.sleep(2)
+                    time.sleep(5)
                     break
                 except Exception as E:
                     pass
@@ -582,7 +554,7 @@ def scraping_source(companyinfo):
                 try:
                     count_while2 = count_while2 + 1
                     tables_csv.find_element(By.CSS_SELECTOR, 'a[title="CSV/Excel Download"]').click()
-                    time.sleep(1)
+                    time.sleep(5)
                     break
                 except Exception as E:
                     pass
@@ -647,7 +619,7 @@ def scraping_source(companyinfo):
                 try:
                     count_while4 = count_while4 + 1
                     tables_csv.find_element(By.CSS_SELECTOR, 'a[title="CSV/Excel Download"]').click()
-                    time.sleep(1)
+                    time.sleep(5)
                     break
                 except Exception as E:
                     pass
@@ -864,6 +836,7 @@ def scraping_source(companyinfo):
                 # Execute the query with the data
                 cursor.execute(query, item)
                 db.commit()
+                print('-----data inserted successfully----')
                 break
             except Exception as E:
                 returntype = connection_db()
