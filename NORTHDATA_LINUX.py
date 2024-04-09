@@ -525,8 +525,6 @@ def scraping_source(companyinfo):
                     time.sleep(2)
                     break
                 except Exception as E:
-                    print(E)
-                    print('one while loop')
                     pass
             time.sleep(3)
 
@@ -577,8 +575,6 @@ def scraping_source(companyinfo):
                     item['Finanzen'] = str(finanzen)
                     break
                 except Exception as E:
-                    print(E)
-                    print('two while loop')
                     pass
 
 
@@ -592,8 +588,6 @@ def scraping_source(companyinfo):
                     time.sleep(1)
                     break
                 except Exception as E:
-                    print(E)
-                    print('three while loop')
                     pass
             time.sleep(5)
 
@@ -646,8 +640,6 @@ def scraping_source(companyinfo):
                     item['Mktg & Tech'] = str(Mktg_Tech)
                     break
                 except Exception as E:
-                    print(E)
-                    print('four while loop')
                     pass
 
 
@@ -661,8 +653,6 @@ def scraping_source(companyinfo):
                     time.sleep(1)
                     break
                 except Exception as E:
-                    print(E)
-                    print('five while loop')
                     pass
             time.sleep(5)
             count_while5 = 0
@@ -716,8 +706,6 @@ def scraping_source(companyinfo):
                     item[f'{set_csv_name}'] = str(euro_tsd)
                     break
                 except Exception as E:
-                    print(E)
-                    print('six while loop')
                     pass
     try:
         item['wz-branchencode'] = driver.find_element(By.CSS_SELECTOR, "div[title='WZ-Branchencode']").text
@@ -881,8 +869,6 @@ def scraping_source(companyinfo):
                 db.commit()
                 break
             except Exception as E:
-                print(E)
-                print('while seven stop ')
                 returntype = connection_db()
                 db = returntype[0]
                 cursor = returntype[1]
