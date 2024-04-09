@@ -275,24 +275,21 @@ def get_next_company_to_scrape(table_name):
 def scraping_source(companyinfo):
 
     element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]')))
-    if companyinfo['url'] == "" or companyinfo['url'] == None:
-        driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').clear()
+    driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').clear()
+    time.sleep(0.5)
+    driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(companyinfo['name'])
+
+    time.sleep(0.5)
+    try:
+        driver.find_element(By.CSS_SELECTOR, "div.results.transition.visible a").click()
         time.sleep(0.5)
-        driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(companyinfo['name'])
-        # driver.find_element(By.CSS_SELECTOR,'input[placeholder="Firma oder Person"]' ).send_keys('Robert Bosch GmbH, Gerlingen')
-        # driver.find_element(By.CSS_SELECTOR,'input[placeholder="Firma oder Person"]' ).send_keys('incari GmbH, Berlin')
-        time.sleep(0.5)
-        try:
-            driver.find_element(By.CSS_SELECTOR, "div.results.transition.visible a").click()
-            time.sleep(0.5)
-        except:
-            pass
-        try:
-            driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(Keys.ENTER)
-        except:
-            pass
-    else:
-        driver.get(companyinfo['url'])
+    except:
+        pass
+    try:
+        driver.find_element(By.CSS_SELECTOR, 'input[placeholder="Firma oder Person"]').send_keys(Keys.ENTER)
+    except:
+        pass
+
 
 
 
