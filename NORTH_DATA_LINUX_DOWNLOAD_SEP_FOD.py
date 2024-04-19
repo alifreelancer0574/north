@@ -19,6 +19,23 @@ source_data = "google_search"
 data_table_updated = 'north_data_updated_1'
 data_table_history = 'north_data_history_1'
 
+import shutil
+
+def create_and_move_data(source_folder, destination_folder):
+    # Create the destination folder if it doesn't exist
+    if not os.path.exists(destination_folder):
+        os.makedirs(destination_folder)
+    
+    # Get a list of files in the source folder
+    files = os.listdir(source_folder)
+    
+    # Move each file to the destination folder
+    for file in files:
+        source_file_path = os.path.join(source_folder, file)
+        destination_file_path = os.path.join(destination_folder, file)
+        shutil.move(source_file_path, destination_file_path)
+        print(f"Moved {file} to {destination_folder}")
+
 path= os.getcwd()
 directory_path = "data"
 
