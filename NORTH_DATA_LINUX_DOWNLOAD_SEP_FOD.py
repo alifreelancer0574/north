@@ -101,7 +101,7 @@ def create_table_andinsert_data():
                             website TEXT,
                             ust_id TEXT,
                             wz_branchencode TEXT,
-                            wz_name TEXT,
+                            wz_name TEXT
                            );
                     """).format(sqlpsycop.Identifier(data_table_updated))
 
@@ -143,8 +143,8 @@ def create_table_andinsert_data():
                                         website TEXT,
                                         ust_id TEXT,
                                         wz_branchencode TEXT,
-                                        wz_name TEXT,
-                                            );
+                                        wz_name TEXT
+                                        );
                                     """).format(sqlpsycop.Identifier(data_table_history))
 
         # Execute the SQL command
@@ -707,8 +707,15 @@ def scraping_source(companyinfo):
 
         }
         # Writing dictionary to JSON file
-        with open(all_directory_path+'/'+companyinfo['company_id'], 'w') as json_file:
+        with open(directory_path+'/'+companyinfo['company_id'], 'w') as json_file:
             json.dump(json_file_data, json_file)
+
+        del item['Markenbekanntmachungen']
+        del item['HTML']
+        del item['publications']
+        del item['KONZERNJAHRESABSCHLUSS']
+        del item['graph']
+        item['jahressabschluss']
 
         check_exit_items = ['url', 'NAME', 'REGISTER', 'ADRESSE', 'GEGENSTAND', 'Telephone', 'Fax', 'E-Mail', 'Website',
                             'UST-ID', 'wz-branchencode', 'wz-name']
