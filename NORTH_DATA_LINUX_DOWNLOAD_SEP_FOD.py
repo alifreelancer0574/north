@@ -207,8 +207,7 @@ def create_and_move_data(directory_path, new_name):
     for file in files:
         source_file_path = os.path.join(directory_path, file)
         destination_file_path = os.path.join(all_directory_path+'/'+new_name, file)
-        shutil.move(source_file_path, destination_file_path)
-        print(f"Moved {file} to {destination_folder}")       
+        shutil.move(source_file_path, destination_file_path)     
 
 create_table_andinsert_data()
 
