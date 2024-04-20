@@ -14,30 +14,18 @@ import math
 from webdriver_manager.chrome import ChromeDriverManager
 from psycopg2 import sql as sqlpsycop
 from datetime import datetime,timedelta
+import shutil
 source_data = "google_search"
 
 data_table_updated = 'north_data_updated_1'
 data_table_history = 'north_data_history_1'
 
-import shutil
 
-def create_and_move_data(source_folder, destination_folder):
-    # Create the destination folder if it doesn't exist
-    if not os.path.exists(destination_folder):
-        os.makedirs(destination_folder)
-    
-    # Get a list of files in the source folder
-    files = os.listdir(source_folder)
-    
-    # Move each file to the destination folder
-    for file in files:
-        source_file_path = os.path.join(source_folder, file)
-        destination_file_path = os.path.join(destination_folder, file)
-        shutil.move(source_file_path, destination_file_path)
-        print(f"Moved {file} to {destination_folder}")
-
-path= os.getcwd()
 directory_path = "data"
+all_directory_path = 'all_data'
+#os.chdir("/run/user/1001/gvfs/afp-volume:host=bu-1.local,user=companies,volume=Data%20RD/Companies/F1103R/HRB")
+path= os.getcwd()
+
 
 def download_pdf(url, save_path):
     response = requests.get(url)
@@ -65,6 +53,7 @@ def connection_db():
 def create_directory(directory_path):
     try:
         os.makedirs(directory_path)
+        os.makedirs(all_directory_path)
         print(f"Directory '{directory_path}' created successfully.")
     except FileExistsError:
         print(f"Directory '{directory_path}' already exists.")
@@ -203,6 +192,23 @@ def rename_and_create(directory_path, new_name):
 
     except OSError as e:
         print(f"Error: {e.strerror}")
+        
+
+
+def create_and_move_data(directory_path, new_name):
+    # Create the destination folder if it doesn't exist
+    if not os.path.exists(new_name):
+        os.makedirs(all_directory_path+'/'+new_name)
+    
+    # Get a list of files in the source folder
+    files = os.listdir(directory_path)
+    
+    # Move each file to the destination folder
+    for file in files:
+        source_file_path = os.path.join(directory_path, file)
+        destination_file_path = os.path.join(all_directory_path+'/'+new_name, file)
+        shutil.move(source_file_path, destination_file_path)
+        print(f"Moved {file} to {destination_folder}")       
 
 create_table_andinsert_data()
 
@@ -591,9 +597,7 @@ def scraping_source(companyinfo):
     jahressabschluss = False
 
     for publica_three in driver.find_elements(By.CSS_SELECTOR, "div.ui.feed div.event"):
-        if ('Liste der Gesellschafter' in publica_three.find_element(By.CSS_SELECTOR,
-                                                                     "div.content div.summary").text) and (
-                liste_der_geselleschafter == False):
+        if ('Liste der Gesellschafter' in publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary").text) and (liste_der_geselleschafter == False):
             new_url = publica_three.find_element(By.CSS_SELECTOR, "div.content div.summary a").get_attribute('href')
             driver.execute_script("window.open('about:blank', '_blank');")
             # Get the handles of all open tabs/windows
@@ -624,9 +628,7 @@ def scraping_source(companyinfo):
             # Switch back to the default tab (the first handle in the list)
             default_tab_handle = window_handles[0]
             driver.switch_to.window(default_tab_handle)
-        if ('Jah­res­ab­schluss' in publica_three.find_element(By.CSS_SELECTOR,
-                                                               "div.content div.summary").text) and (
-                jahressabschluss == False):
+        if ('Jah­res­ab­schluss' in publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary").text) and (jahressabschluss == False):
             new_url = publica_three.find_element(By.CSS_SELECTOR, "div.content div.summary a").get_attribute('href')
             driver.execute_script("window.open('about:blank', '_blank');")
             # Get the handles of all open tabs/windows
@@ -649,8 +651,7 @@ def scraping_source(companyinfo):
             driver.switch_to.window(default_tab_handle)
             jahressabschluss = True
 
-        if ('Markenbekanntmachungen' in publica_three.find_element(By.CSS_SELECTOR,
-                                                                   "div.content div.summary").text):
+        if ('Markenbekanntmachungen' in publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary").text):
             new_url = publica_three.find_element(By.CSS_SELECTOR, "div.content div.summary a").get_attribute('href')
             driver.execute_script("window.open('about:blank', '_blank');")
             # Get the handles of all open tabs/windows
@@ -726,7 +727,7 @@ def scraping_source(companyinfo):
                 cursor.execute(query, item)
                 db.commit()
                 print('-------data inserted succesfully-----')
-                rename_and_create(directory_path, companyinfo['company_id'])
+                create_and_move_data(directory_path, companyinfo['company_id'])
                 break
             except Exception as E:
                 returntype = connection_db()
@@ -776,11 +777,11 @@ def check_blocked_rows(data_table_name):
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("prefs", {
-    "download.default_directory": path + f'/{directory_path}'
+    "download.default_directory": path + '/data'
 })
 
-# driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
-driver = webdriver.Chrome(options=chrome_options)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+#driver = webdriver.Chrome(ChromeDriverManager().install(),options=chrome_options)
 driver.maximize_window()
 
 driver.get('https://www.northdata.de/_login')
