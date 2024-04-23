@@ -842,8 +842,8 @@ chrome_options.add_experimental_option("prefs", {
     "download.default_directory": path + '/data'
 })
 
-# driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
-driver = webdriver.Chrome(options=chrome_options)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+#driver = webdriver.Chrome(options=chrome_options)
 # driver = webdriver.Chrome(ChromeDriverManager().install(),options=chrome_options)
 driver.maximize_window()
 
