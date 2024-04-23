@@ -22,7 +22,6 @@ data_table_updated = 'north_data_updated_1'
 data_table_history = 'north_data_history_1'
 
 directory_path = "data"
-all_directory_path = 'all_data'
 cookies_file = "cookies.pkl"
 
 os.chdir("/run/user/1001/gvfs/afp-volume:host=bu-1.local,user=companies,volume=Data%20RD/Companies/F1103R/HRB")
@@ -86,7 +85,6 @@ def connection_db():
 def create_directory(directory_path):
     try:
         os.makedirs(directory_path)
-        os.makedirs(all_directory_path)
         print(f"Directory '{directory_path}' created successfully.")
     except FileExistsError:
         print(f"Directory '{directory_path}' already exists.")
@@ -221,7 +219,7 @@ def create_and_move_data(directory_path, new_name):
     # Create the destination folder if it doesn't exist
     try:
         if not os.path.exists(new_name):
-            os.makedirs(all_directory_path + '/' + new_name)
+            os.makedirs(new_name)
     except:
         pass
 
@@ -231,7 +229,7 @@ def create_and_move_data(directory_path, new_name):
     # Move each file to the destination folder
     for file in files:
         source_file_path = os.path.join(directory_path, file)
-        destination_file_path = os.path.join(all_directory_path + '/' + new_name, file)
+        destination_file_path = os.path.join(new_name, file)
         shutil.move(source_file_path, destination_file_path)
 
 
