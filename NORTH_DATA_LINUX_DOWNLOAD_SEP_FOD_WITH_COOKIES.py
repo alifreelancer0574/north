@@ -16,15 +16,18 @@ from psycopg2 import sql as sqlpsycop
 from datetime import datetime, timedelta
 import shutil
 import pickle
+
+
 source_data = "google_search"
 
 data_table_updated = 'north_data_updated_1'
 data_table_history = 'north_data_history_1'
 
 directory_path = "data"
+all_directory_path = 'all_data'
 cookies_file = "cookies.pkl"
 
-os.chdir("/run/user/1001/gvfs/afp-volume:host=bu-1.local,user=companies,volume=Data%20RD/Companies/F1103R/HRB")
+#os.chdir("/run/user/1001/gvfs/afp-volume:host=bu-1.local,user=companies,volume=Data%20RD/Companies/F1103R/HRB")
 
 path = os.getcwd()
 
@@ -85,6 +88,7 @@ def connection_db():
 def create_directory(directory_path):
     try:
         os.makedirs(directory_path)
+        os.makedirs(all_directory_path)
         print(f"Directory '{directory_path}' created successfully.")
     except FileExistsError:
         print(f"Directory '{directory_path}' already exists.")
@@ -218,8 +222,8 @@ def rename_and_create(directory_path, new_name):
 def create_and_move_data(directory_path, new_name):
     # Create the destination folder if it doesn't exist
     try:
-        if not os.path.exists(new_name):
-            os.makedirs(new_name)
+        if not os.path.exists(all_directory_path+'/'+new_name):
+           os.makedirs(all_directory_path + '/' + new_name)
     except:
         pass
 
@@ -229,9 +233,9 @@ def create_and_move_data(directory_path, new_name):
     # Move each file to the destination folder
     for file in files:
         source_file_path = os.path.join(directory_path, file)
-        destination_file_path = os.path.join(new_name, file)
+        destination_file_path = os.path.join(all_directory_path + '/' + new_name, file)
         shutil.move(source_file_path, destination_file_path)
-
+    
 
 create_table_andinsert_data()
 
@@ -837,7 +841,7 @@ def check_blocked_rows(data_table_name):
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("prefs", {
-    "download.default_directory": path + '/data'
+    "download.default_directory": path+'/'+'data'
 })
 
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
