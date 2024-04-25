@@ -3,6 +3,8 @@ import time
 import datetime
 import psutil
 import signal
+import psutil
+import platform
 # Function to read time from the text file
 def read_time_from_file():
     try:
@@ -63,6 +65,24 @@ def main():
             print("Process is running.")
 
         time.sleep(5)  # Check every 5 seconds
+
+
+
+def close_browsers():
+    system = platform.system()
+    if system == 'Windows':
+        browsers = ['chrome.exe', 'firefox.exe', 'msedge.exe', 'iexplore.exe', 'opera.exe']
+    elif system == 'Darwin':  # macOS
+        browsers = ['Google Chrome', 'Firefox', 'Safari', 'Opera']
+    elif system == 'Linux':
+        browsers = ['chrome', 'firefox', 'opera', 'chromium-browser']
+    else:
+        print("Unsupported platform")
+        return
+
+    for proc in psutil.process_iter():
+        if proc.name() in browsers:
+            proc.kill()
 
 
 if __name__ == "__main__":
