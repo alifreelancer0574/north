@@ -1,62 +1,69 @@
-import datetime
+import subprocess
 import time
-
+import datetime
+import psutil
+import signal
 # Function to read time from the text file
 def read_time_from_file():
-    with open("time.txt", "r") as file:
-        stored_time = file.readline()
-        return datetime.datetime.strptime(stored_time, "%Y-%m-%d %H:%M:%S")
+    try:
+        with open("time.txt", "r") as file:
+           stored_time = file.readline()
+           return datetime.datetime.strptime(stored_time, "%Y-%m-%d %H:%M:%S")
+    except:
+        return datetime.datetime.now()
+        
+          
+           
 
 # Function to check if the difference is greater than a certain threshold
 def check_time_difference(threshold_minutes):
     stored_time = read_time_from_file()
     current_time = datetime.datetime.now()
     time_difference = (current_time - stored_time).total_seconds() / 60
-    return time_difference > threshold_minutes
+    #return time_difference > threshold_minutes
+    return True
+    
+def is_process_running(process_name):
+    try:
+        output = subprocess.check_output(['pgrep', '-f', process_name])
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
-# Main loop
-while True:
-    write_time_to_file()
-    time.sleep(5 * 60)  # Wait for 5 minutes
-    if check_time_difference(10):
-        print("Difference is greater than 10 minutes. Stopping.")
-        break
 
-try:
-    parent = psutil.Process(process.pid)
-    for child in parent.children(recursive=True):
-        child.terminate()  # or child.kill() for forceful termination
-    parent.terminate()
-except psutil.NoSuchProcess:
-    pass 
+def start_process(process_name):
+    process = subprocess.Popen(['python3', process_name])
+    return process
 
-# Function to terminate Chrome processes
-def close_chrome():
-    for proc in psutil.process_iter(['pid', 'name']):
-        if 'chrome' in proc.info['name'].lower():
+
+
+def main():
+    process_name = "NORTH_DATA_LINUX_DOWNLOAD_SEP_FOD_WITH_COOKIES.py"
+
+    while True:
+        if not is_process_running(process_name):
+            print("Process is not running, starting...")
+            process_return = start_process(process_name)
+        time.sleep(8)    
+        if check_time_difference(5):
+            
+            process_return.terminate()
             try:
-                proc.send_signal(signal.SIGTERM)
+                parent = psutil.Process(process_return.pid)
+                for child in parent.children(recursive=True):
+                    child.terminate()  
+                parent.terminate()
+                
             except psutil.NoSuchProcess:
-                pass
+                pass 
+             	
+        
+            
+        else:
+            print("Process is running.")
 
-import psutil
-import platform
+        time.sleep(5)  # Check every 5 seconds
 
-def close_browsers():
-    system = platform.system()
-    if system == 'Windows':
-        browsers = ['chrome.exe', 'firefox.exe', 'msedge.exe', 'iexplore.exe', 'opera.exe']
-    elif system == 'Darwin':  # macOS
-        browsers = ['Google Chrome', 'Firefox', 'Safari', 'Opera']
-    elif system == 'Linux':
-        browsers = ['chrome', 'firefox', 'opera', 'chromium-browser']
-    else:
-        print("Unsupported platform")
-        return
-
-    for proc in psutil.process_iter():
-        if proc.name() in browsers:
-            proc.kill()
 
 if __name__ == "__main__":
-    close_browsers()
+    main()
