@@ -93,7 +93,10 @@ def create_directory(directory_path):
     except FileExistsError:
         print(f"Directory '{directory_path}' already exists.")
 
-
+def write_time_to_file():
+    with open("time.txt", "w") as file:
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        file.write(current_time)
 create_directory(directory_path)
 
 returntype = connection_db()
@@ -790,6 +793,7 @@ def scraping_source(companyinfo):
                     db.commit()
                     print('-------data inserted succesfully-----')
                     create_and_move_data(directory_path, companyinfo['company_id'])
+                    write_time_to_file()
                     break
                 except Exception as E:
                     returntype = connection_db()
