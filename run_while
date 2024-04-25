@@ -29,3 +29,12 @@ try:
     parent.terminate()
 except psutil.NoSuchProcess:
     pass 
+
+# Function to terminate Chrome processes
+def close_chrome():
+    for proc in psutil.process_iter(['pid', 'name']):
+        if 'chrome' in proc.info['name'].lower():
+            try:
+                proc.send_signal(signal.SIGTERM)
+            except psutil.NoSuchProcess:
+                pass
