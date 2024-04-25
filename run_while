@@ -1,0 +1,23 @@
+import datetime
+import time
+
+# Function to read time from the text file
+def read_time_from_file():
+    with open("time.txt", "r") as file:
+        stored_time = file.readline()
+        return datetime.datetime.strptime(stored_time, "%Y-%m-%d %H:%M:%S")
+
+# Function to check if the difference is greater than a certain threshold
+def check_time_difference(threshold_minutes):
+    stored_time = read_time_from_file()
+    current_time = datetime.datetime.now()
+    time_difference = (current_time - stored_time).total_seconds() / 60
+    return time_difference > threshold_minutes
+
+# Main loop
+while True:
+    write_time_to_file()
+    time.sleep(5 * 60)  # Wait for 5 minutes
+    if check_time_difference(10):
+        print("Difference is greater than 10 minutes. Stopping.")
+        break
