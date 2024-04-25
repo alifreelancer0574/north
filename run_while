@@ -38,3 +38,25 @@ def close_chrome():
                 proc.send_signal(signal.SIGTERM)
             except psutil.NoSuchProcess:
                 pass
+
+import psutil
+import platform
+
+def close_browsers():
+    system = platform.system()
+    if system == 'Windows':
+        browsers = ['chrome.exe', 'firefox.exe', 'msedge.exe', 'iexplore.exe', 'opera.exe']
+    elif system == 'Darwin':  # macOS
+        browsers = ['Google Chrome', 'Firefox', 'Safari', 'Opera']
+    elif system == 'Linux':
+        browsers = ['chrome', 'firefox', 'opera', 'chromium-browser']
+    else:
+        print("Unsupported platform")
+        return
+
+    for proc in psutil.process_iter():
+        if proc.name() in browsers:
+            proc.kill()
+
+if __name__ == "__main__":
+    close_browsers()
