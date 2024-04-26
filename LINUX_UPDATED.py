@@ -802,9 +802,10 @@ def scraping_source(companyinfo):
         del item['jahressabschluss']
 
         if item['NAME'] != "":
-
-            while True:
+            count = 0
+            while count < 5:
                 try:
+                    count = count + 1
                     update_query = (
                         f"UPDATE {data_table_updated} "
                         "SET end_time = CURRENT_TIMESTAMP ,company_name = %(company_name)s,register = %(REGISTER)s,address=%(ADRESSE)s,gegenstand = %(GEGENSTAND)s ,telephone = %(Telephone)s, fax = %(Fax)s, email = %(E-Mail)s, website = %(Website)s, ust_id = %(UST-ID)s, wz_branchencode = %(wz-branchencode)s, wz_name = %(wz-name)s"
@@ -910,9 +911,8 @@ except FileNotFoundError:
     time.sleep(5)
     save_cookies(driver, cookies_file)
     print("No cookies file found. Logging in...")
-count = 0 
-while count < 5:
-    count  count + 1
+
+while True:
     next_company = get_next_company_to_scrape(data_table_updated)
     if next_company != None:
         scraping_source(next_company)
