@@ -880,8 +880,8 @@ chrome_options.add_experimental_option("prefs", {
     "download.default_directory": path + '/' + 'data'
 })
 
-# driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
-driver = webdriver.Chrome(options=chrome_options)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
+#driver = webdriver.Chrome(options=chrome_options)
 # driver = webdriver.Chrome(ChromeDriverManager().install(),options=chrome_options)
 driver.maximize_window()
 
@@ -910,8 +910,9 @@ except FileNotFoundError:
     time.sleep(5)
     save_cookies(driver, cookies_file)
     print("No cookies file found. Logging in...")
-
-while True:
+count = 0 
+while count < 5:
+    count  count + 1
     next_company = get_next_company_to_scrape(data_table_updated)
     if next_company != None:
         scraping_source(next_company)
