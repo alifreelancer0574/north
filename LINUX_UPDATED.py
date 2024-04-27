@@ -653,11 +653,8 @@ def scraping_source(companyinfo):
         try:
             for publica_three in driver.find_elements(By.CSS_SELECTOR, "div.ui.feed div.event"):
                 try:
-                    if ('Liste der Gesellschafter' in publica_three.find_element(By.CSS_SELECTOR,
-                                                                                 "div.content div.summary").text) and (
-                            liste_der_geselleschafter == False):
-                        new_url = publica_three.find_element(By.CSS_SELECTOR,
-                                                             "div.content div.summary a").get_attribute('href')
+                    if ('Liste der Gesellschafter' in publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary").text) and (liste_der_geselleschafter == False):
+                        new_url = publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary a").get_attribute('href')
                         driver.execute_script("window.open('about:blank', '_blank');")
                         # Get the handles of all open tabs/windows
                         window_handles = driver.window_handles
@@ -668,17 +665,17 @@ def scraping_source(companyinfo):
 
                         driver.get(new_url)
                         time.sleep(1)
-
-                        pdf_url = driver.page_source.split('PDFObject.embed("')[-1].split('",')[0]
-
-                        name_pdf = driver.current_url.split('=')[-1]
-                        download_pdf(pdf_url, directory_path + '/' + name_pdf + '.pdf')
-                        liste_der_geselleschafter = True
-
                         try:
+
+                            pdf_url = driver.page_source.split('PDFObject.embed("')[-1].split('",')[0]
+
+                            name_pdf = driver.current_url.split('=')[-1]
+                            download_pdf(pdf_url, directory_path + '/' + name_pdf + '.pdf')
+                            liste_der_geselleschafter = True
+
                             time.sleep(1)
+
                         except:
-                            a = 1
                             pass
 
                         # Close the new tab
@@ -690,11 +687,8 @@ def scraping_source(companyinfo):
                 except:
                     pass
                 try:
-                    if ('Jah­res­ab­schluss' in publica_three.find_element(By.CSS_SELECTOR,
-                                                                           "div.content div.summary").text) and (
-                            jahressabschluss == False):
-                        new_url = publica_three.find_element(By.CSS_SELECTOR,
-                                                             "div.content div.summary a").get_attribute('href')
+                    if ('Jah­res­ab­schluss' in publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary").text) and (jahressabschluss == False):
+                        new_url = publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary a").get_attribute('href')
                         driver.execute_script("window.open('about:blank', '_blank');")
                         # Get the handles of all open tabs/windows
                         window_handles = driver.window_handles
@@ -721,10 +715,8 @@ def scraping_source(companyinfo):
                     pass
 
                 try:
-                    if ('Markenbekanntmachungen' in publica_three.find_element(By.CSS_SELECTOR,
-                                                                               "div.content div.summary").text):
-                        new_url = publica_three.find_element(By.CSS_SELECTOR,
-                                                             "div.content div.summary a").get_attribute('href')
+                    if ('Markenbekanntmachungen' in publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary").text):
+                        new_url = publica_three.find_element(By.CSS_SELECTOR,"div.content div.summary a").get_attribute('href')
                         driver.execute_script("window.open('about:blank', '_blank');")
                         # Get the handles of all open tabs/windows
                         window_handles = driver.window_handles
@@ -741,22 +733,24 @@ def scraping_source(companyinfo):
                                 pass
                         except:
                             item['Markenbekanntmachungen'] = []
-
-                        for loop_table_rpws in driver.find_elements(By.CSS_SELECTOR, "div.publication-text table tr"):
-                            new_dict = dict()
-                            new_dict['date'] = loop_table_rpws.find_elements(By.CSS_SELECTOR, "td")[0].text
-                            new_dict['name'] = loop_table_rpws.find_elements(By.CSS_SELECTOR, "td")[1].text
-                            try:
-                                new_dict['url'] = loop_table_rpws.find_elements(By.CSS_SELECTOR, "td a")[
-                                    0].get_attribute(
-                                    'href')
-                            except:
-                                new_dict['url'] = ""
-                            try:
-                                item['Markenbekanntmachungen'].append(new_dict)
-                            except:
-                                a = 1
-                                pass
+                        try:
+                            for loop_table_rpws in driver.find_elements(By.CSS_SELECTOR, "div.publication-text table tr"):
+                                new_dict = dict()
+                                new_dict['date'] = loop_table_rpws.find_elements(By.CSS_SELECTOR, "td")[0].text
+                                new_dict['name'] = loop_table_rpws.find_elements(By.CSS_SELECTOR, "td")[1].text
+                                try:
+                                    new_dict['url'] = loop_table_rpws.find_elements(By.CSS_SELECTOR, "td a")[
+                                        0].get_attribute(
+                                        'href')
+                                except:
+                                    new_dict['url'] = ""
+                                try:
+                                    item['Markenbekanntmachungen'].append(new_dict)
+                                except:
+                                    a = 1
+                                    pass
+                        except:
+                            pass
 
                         # Close the new tab
                         driver.close()
