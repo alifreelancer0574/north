@@ -13,12 +13,12 @@ def restart_process(script_name):
 def calculate_time_difference():
     if os.path.exists("time.txt"):
         with open("time.txt", "r") as file:
-            last_execution_time = float(file.read().strip())
-            current_time = time.time()
-            time_difference = current_time - last_execution_time
+            last_execution_time = datetime.strptime(file.read().strip(), "%Y-%m-%d %H:%M:%S")
+            current_time = datetime.now()
+            time_difference = (current_time - last_execution_time).total_seconds()
             return time_difference
     else:
-        return float("inf")  # Return a large value if time.txt doesn't exist
+        return float("inf")
 
 def main():
     script_name = "mypython.py"
