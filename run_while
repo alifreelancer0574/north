@@ -1,83 +1,35 @@
 import subprocess
 import time
-import datetime
-import psutil
-import signal
-import platform
-# Function to read time from the text file
-def read_time_from_file():
-    try:
+import os
+from datetime import datetime
+
+def check_process_running(process_name):
+    output = subprocess.getoutput("ps aux | grep '" + process_name + "' | grep -v grep")
+    return len(output.strip().split("\n")) > 0
+
+def restart_process(script_name):
+    os.system("pkill -f '" + script_name + "'")
+    subprocess.Popen(["python3", script_name])
+
+def calculate_time_difference():
+    if os.path.exists("time.txt"):
         with open("time.txt", "r") as file:
-           stored_time = file.readline()
-           return datetime.datetime.strptime(stored_time, "%Y-%m-%d %H:%M:%S")
-    except:
-        return datetime.datetime.now()
-        
-def close_browsers():
-    system = platform.system()
-    if system == 'Windows':
-        browsers = ['chrome.exe', 'firefox.exe', 'msedge.exe', 'iexplore.exe', 'opera.exe']
-    elif system == 'Darwin':  # macOS
-        browsers = ['Google Chrome', 'Firefox', 'Safari', 'Opera']
-    elif system == 'Linux':
-        browsers = ['chrome', 'firefox', 'opera', 'chromium-browser']
+            last_execution_time = datetime.strptime(file.read().strip(), "%Y-%m-%d %H:%M:%S")
+            current_time = datetime.now()
+            time_difference = (current_time - last_execution_time).total_seconds()
+            return time_difference
     else:
-        print("Unsupported platform")
-        return
-
-    for proc in psutil.process_iter():
-        if proc.name() in browsers:
-            proc.kill()          
-           
-
-# Function to check if the difference is greater than a certain threshold
-def check_time_difference(threshold_minutes):
-    stored_time = read_time_from_file()
-    current_time = datetime.datetime.now()
-    time_difference = (current_time - stored_time).total_seconds() / 60
-    return time_difference > threshold_minutes
-    #return True
-    
-def is_process_running(process_name):
-    try:
-        output = subprocess.check_output(['pgrep', '-f', process_name])
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-
-def start_process(process_name):
-    process = subprocess.Popen(['python3', process_name])
-    return process
-
-
+        return float("inf")
 
 def main():
-    process_name = "NORTH_DATA_LINUX_DOWNLOAD_SEP_FOD_WITH_COOKIES.py"
-
+    script_name = "NORTH_DATA_LINUX_DOWNLOAD_SEP_FOD_WITH_COOKIES.py"
     while True:
-        if not is_process_running(process_name):
-            print("Process is not running, starting...")
-            process_return = start_process(process_name)   
-        if check_time_difference(5):
-            close_browsers()
-            process_return.terminate()
-            try:
-                parent = psutil.Process(process_return.pid)
-                for child in parent.children(recursive=True):
-                    child.terminate()  
-                parent.terminate()
-                
-            except psutil.NoSuchProcess:
-                pass 
-             	
-        
-            
-        else:
-            print("Process is running.")
-
-        time.sleep(5)  # Check every 5 seconds
-
+        if not check_process_running(script_name):
+            restart_process(script_name)
+        time_difference = calculate_time_difference()
+        if time_difference > 300:  # 5 minutes in seconds
+            restart_process(script_name)
+        time.sleep(60)  # Check every minute
 
 if __name__ == "__main__":
     main()
