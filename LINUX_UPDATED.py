@@ -17,6 +17,7 @@ from datetime import datetime, timedelta
 import shutil
 import pickle
 
+#'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
 source_data = "google_search"
 
 data_table_updated = 'north_data_updated_1'
@@ -874,6 +875,7 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_experimental_option("prefs", {
     "download.default_directory": path + '/' + 'data'
 })
+chrome_options.add_argument("user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36")
 
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 #driver = webdriver.Chrome(options=chrome_options)
